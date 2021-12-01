@@ -1,6 +1,10 @@
 # JBLRecover
 ensures that JBL headphones do not go into sleep mode
 
+# Screenshot:
+
+![preview](https://user-images.githubusercontent.com/7933943/144284705-0c00eef6-b444-48bd-93b9-e073902373bb.png)
+
 # Why?
 
 I got a new JBL headset and i am very happy with it but one thing. When i am doing online meetings or stopping my music because i need some more concentration, then the headset will shutdown after about 10 minues. This really suucks. JBL  support stated, that this can not be changed, so i wrote this program, which will keep the headset stying awake.
