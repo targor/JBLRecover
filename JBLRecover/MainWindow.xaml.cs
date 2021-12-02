@@ -40,6 +40,7 @@ namespace JBLRecover
 
         private void Play(string audioFile = "Sine_16196_96k_Float_LR.wav")
         {
+            if (devices.SelectedItem == null) { return; }
             Thread t = new Thread(() => {
 
                 MMDevice device = null;
@@ -180,6 +181,14 @@ namespace JBLRecover
                     }
                 }
 
+                if (devices.SelectedItem==null)
+                {
+                    this.Show();
+                    this.ShowInTaskbar = true;
+                    this.WindowState = System.Windows.WindowState.Normal;
+                    System.Windows.Forms.MessageBox.Show("Could not find the correct speaker output, please select one manually.");
+                }
+
             }
             catch (Exception ex)
             {
@@ -252,7 +261,6 @@ namespace JBLRecover
                 int timeinminutes = defaultPlayTime;
                 int.TryParse(txtwavetime.Text, out timeinminutes);
                 this.playtime = 60 * timeinminutes;
-                if (this.playtime > defaultPlayTime) { this.playtime = defaultPlayTime; }
             }
         }
 
@@ -282,24 +290,28 @@ namespace JBLRecover
                     Thread.Sleep(100);
                     try
                     {
-                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        if (devices.SelectedItem != null)
                         {
-                            CapsWrapper wrapper = (CapsWrapper)devices.SelectedItem;
-                            double[] volumes = GetDeviceVolumes(wrapper);
-
-                            if (!minmaxset)
+                            System.Windows.Application.Current.Dispatcher.Invoke(() =>
                             {
-                                devicevolumebar.Minimum = volumes[0];
-                                devicevolumebar.Maximum = volumes[1];
-                                playbackvolumebar.Maximum = 1;
-                                playbackvolumebar.Minimum = 0;
-                                minmaxset = true;
-                            }
 
-                            devicevolumebar.Value = volumes[2];
-                            playbackvolumebar.Value = wrapper.Device.AudioMeterInformation.MasterPeakValue;
-                            
-                        });
+                                CapsWrapper wrapper = (CapsWrapper)devices.SelectedItem;
+                                double[] volumes = GetDeviceVolumes(wrapper);
+
+                                if (!minmaxset)
+                                {
+                                    devicevolumebar.Minimum = volumes[0];
+                                    devicevolumebar.Maximum = volumes[1];
+                                    playbackvolumebar.Maximum = 1;
+                                    playbackvolumebar.Minimum = 0;
+                                    minmaxset = true;
+                                }
+
+                                devicevolumebar.Value = volumes[2];
+                                playbackvolumebar.Value = wrapper.Device.AudioMeterInformation.MasterPeakValue;
+
+                            });
+                        }
                     }
                     catch (Exception) { }
                 }
