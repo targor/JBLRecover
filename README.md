@@ -1,5 +1,5 @@
 # JBLRecover
-ensures that JBL headphones do not go into sleep mode
+ensures that JBL headphones (at least for my Quantum 800) do not go into sleep mode
 
 # Screenshot:
 
