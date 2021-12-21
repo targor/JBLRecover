@@ -167,15 +167,9 @@ namespace JBLRecover
                     CapsWrapper c = (CapsWrapper)o;
                     if (c.ToString().ToLower().Contains("jbl")
                         &&
-                        c.Device.AudioEndpointVolume.MasterVolumeLevel != 0.0f &&
-                        (
-                            c.ToString().ToLower().Contains("lautsprecher") ||
-                            c.ToString().ToLower().Contains("speaker")
-                        )
-                    )
+                        c.Device.AudioEndpointVolume.MasterVolumeLevel != 0.0f && c.Device.DataFlow==DataFlow.Render)
                     {
                         devices.SelectedItem = o;
-                        listener();
                         Play();
                         break;
                     }
@@ -183,11 +177,46 @@ namespace JBLRecover
 
                 if (devices.SelectedItem==null)
                 {
+                    var enumerator = new MMDeviceEnumerator();
+                    MMDevice mm =enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+
+                    bool deviceset = false;
+
+                    if (mm != null)
+                    {
+                        foreach (object o in devices.Items)
+                        {
+                            CapsWrapper c = (CapsWrapper)o;
+                            if (c.Device.AudioEndpointVolume.MasterVolumeLevel != 0.0f &&
+                                c.Device.DataFlow == DataFlow.Render &&
+                                c.Device.State == DeviceState.Active &&
+                                c.Device.ID.Equals(mm.ID)
+
+                                )
+                            {
+                                deviceset = true;
+                                devices.SelectedItem = o;
+                                Play();
+                                break;
+                            }
+                        }
+                    }
+
+
                     this.Show();
                     this.ShowInTaskbar = true;
                     this.WindowState = System.Windows.WindowState.Normal;
-                    System.Windows.Forms.MessageBox.Show("Could not find the correct speaker output, please select one manually.");
+                    if (deviceset)
+                    {
+                        System.Windows.Forms.MessageBox.Show("A specific jbl device could not be found. The default active device was set instead, please check if everything is allright.");
+                    }
+                    else
+                    {
+                        System.Windows.Forms.MessageBox.Show("Could not find the correct speaker output, please select one manually.");
+                    }
                 }
+
+                listener();
 
             }
             catch (Exception ex)
@@ -290,12 +319,18 @@ namespace JBLRecover
                     Thread.Sleep(100);
                     try
                     {
-                        if (devices.SelectedItem != null)
+                        CapsWrapper wrapper = null;
+                        App.Current.Dispatcher.Invoke(() => {
+                            if (devices.SelectedItem != null)
+                            {
+                                wrapper = (CapsWrapper)devices.SelectedItem;
+                            }
+                        });
+
+                        if (wrapper != null)
                         {
                             System.Windows.Application.Current.Dispatcher.Invoke(() =>
                             {
-
-                                CapsWrapper wrapper = (CapsWrapper)devices.SelectedItem;
                                 double[] volumes = GetDeviceVolumes(wrapper);
 
                                 if (!minmaxset)
