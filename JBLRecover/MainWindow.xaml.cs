@@ -40,7 +40,11 @@ namespace JBLRecover
 
         private void Play(string audioFile = "Sine_16196_96k_Float_LR.wav")
         {
-            if (devices.SelectedItem == null) { return; }
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (devices.SelectedItem == null) { return; }
+            });
+
             Thread t = new Thread(() => {
 
                 MMDevice device = null;
@@ -58,7 +62,7 @@ namespace JBLRecover
 
                     if (device != null && outputDevice != null)
                     {
-                        // do not play audio, because ther eis already audio running that should keep the headphone alive
+                        // do not play audio, because there is already audio running that should keep the headphone alive
                         if (masterpeak >= 0.0001200000)
                         {
                             return;
