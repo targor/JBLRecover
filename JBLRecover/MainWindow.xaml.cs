@@ -48,18 +48,18 @@ namespace JBLRecover
                 AudioFileReader reader = null;
                 try
                 {
+                    float masterpeak = 0;
                     App.Current.Dispatcher.Invoke(() =>
                     {
                         device = ((CapsWrapper)devices.SelectedItem).Device;
                         outputDevice = new WasapiOut(device, NAudio.CoreAudioApi.AudioClientShareMode.Shared, true, 0);
+                        masterpeak = device.AudioMeterInformation.MasterPeakValue;
                     });
-
 
                     if (device != null && outputDevice != null)
                     {
-                        float valx = device.AudioMeterInformation.MasterPeakValue;
                         // do not play audio, because ther eis already audio running that should keep the headphone alive
-                        if (device.AudioMeterInformation.MasterPeakValue>= 0.0001200000)
+                        if (masterpeak >= 0.0001200000)
                         {
                             return;
                         }
@@ -217,7 +217,6 @@ namespace JBLRecover
                 }
 
                 listener();
-
             }
             catch (Exception ex)
             {
@@ -261,7 +260,6 @@ namespace JBLRecover
             });
             timer.IsBackground = true;
             timer.Start();
-            Play();
         }
 
         private void Window_Initialized(object sender, EventArgs e)
