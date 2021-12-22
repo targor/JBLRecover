@@ -347,6 +347,7 @@ namespace JBLRecover
                                 devicevolumebar.Value = volumes[2];
                                 playbackvolumebar.Value = wrapper.Device.AudioMeterInformation.MasterPeakValue;
 
+                                trackvolumebar.Value = GetDeviceVolumes(wrapper)[2];
                             });
                         }
                     }
@@ -357,7 +358,7 @@ namespace JBLRecover
             t.Start();
         }
 
-        double[] GetDeviceVolumes(CapsWrapper device, WasapiOut wasapi = null)
+        private double[] GetMinMxOffset(CapsWrapper device)
         {
             double offset = 0;
             if (device.Device.AudioEndpointVolume.VolumeRange.MinDecibels < 0)
@@ -367,6 +368,17 @@ namespace JBLRecover
 
             double min = device.Device.AudioEndpointVolume.VolumeRange.MinDecibels + offset;
             double max = device.Device.AudioEndpointVolume.VolumeRange.MaxDecibels + offset;
+
+            return new double[] { min, max, offset };
+        }
+
+        double[] GetDeviceVolumes(CapsWrapper device, WasapiOut wasapi = null)
+        {
+            double[] vals = GetMinMxOffset(device);
+
+            double offset = vals[2];
+            double min = vals[0];
+            double max = vals[1];
 
             double val = 0;
 
@@ -380,6 +392,8 @@ namespace JBLRecover
             {
                 val = device.Device.AudioEndpointVolume.MasterVolumeLevelScalar * max;
             }
+
+            
 
             return new double[] { min, max, val, deviceval };
         }
