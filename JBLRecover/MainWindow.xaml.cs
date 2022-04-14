@@ -100,18 +100,24 @@ namespace JBLRecover
                                 float max = (device.AudioEndpointVolume.VolumeRange.MaxDecibels);
 
 
-                                if (devicevol > 0.5)
+                                if (boostplayback.IsChecked.HasValue && boostplayback.IsChecked.Value)
                                 {
-                                    filevol = (devicevol) / 8;
-                                }
-                                else if (devicevol < 0.2)
-                                {
-                                    filevol = (devicevol);
+                                    filevol = 1f;
                                 }
                                 else
-                                {
-                                    filevol = (devicevol) / 2;
-
+                                { 
+                                    if (devicevol > 0.5)
+                                    {
+                                        filevol = (devicevol) / 6;
+                                    }
+                                    else if (devicevol < 0.2)
+                                    {
+                                        filevol = 0.5f;
+                                    }
+                                    else
+                                    {
+                                        filevol = (devicevol) / 2;
+                                    }
                                 }
 
                                 int count = outputDevice.AudioStreamVolume.GetAllVolumes().Length;
@@ -119,7 +125,7 @@ namespace JBLRecover
                                 {
                                     outputDevice.AudioStreamVolume.SetChannelVolume(i, filevol);
                                 }
-
+                                
                                 trackvolumebar.Value = GetDeviceVolumes(((CapsWrapper)devices.SelectedItem), outputDevice)[2];
                             });
                         }
@@ -200,11 +206,9 @@ namespace JBLRecover
                         foreach (object o in devices.Items)
                         {
                             CapsWrapper c = (CapsWrapper)o;
-                            if (c.Device.AudioEndpointVolume.MasterVolumeLevel != 0.0f &&
-                                c.Device.DataFlow == DataFlow.Render &&
+                            if (c.Device.DataFlow == DataFlow.Render &&
                                 c.Device.State == DeviceState.Active &&
                                 c.Device.ID.Equals(mm.ID)
-
                                 )
                             {
                                 deviceset = true;
@@ -227,6 +231,7 @@ namespace JBLRecover
                     else
                     {
                         System.Windows.Forms.MessageBox.Show("Could not find the correct speaker output, please select one manually.");
+                        this.Show();
                     }
                 }
 
