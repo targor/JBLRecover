@@ -38,6 +38,9 @@
   <PropertyGroup>
     <ApplicationIcon>shower.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>JBLRecover.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />

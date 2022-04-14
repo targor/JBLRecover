@@ -8,12 +8,12 @@
         Loaded="Window_Loaded"
         Initialized="Window_Initialized"
         StateChanged="Window_StateChanged"
-        Title="JBL Recover" Height="200" Width="400" HorizontalAlignment="Stretch"
+        Title="JBL Recover" Height="230" Width="400" HorizontalAlignment="Stretch"
         ResizeMode="CanMinimize"
         Icon=" pack://application:,,,/JBLRecover;component/shower.ico"
         WindowStartupLocation="CenterScreen" >
     <Grid>
-        <Grid Margin="5 0 5 0" >
+        <Grid Margin="5 0 5 0" VerticalAlignment="Top" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
@@ -21,14 +21,15 @@
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
             </Grid.RowDefinitions>
-           
+
             <Grid Grid.Row="0" Margin="0 10 0 0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="130"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" Padding="0" FontSize="10" >wav playtime in minutes</Label>
+                <Label Grid.Column="0" Padding="0" FontSize="10" >wav (loop)playtime in minutes</Label>
                 <TextBox x:Name="txtwavetime" Grid.Column="1" Height="18" TextChanged="txtwavetime_TextChanged" HorizontalAlignment="Stretch">9</TextBox>
             </Grid>
 
@@ -66,10 +67,22 @@
                 </Grid.ColumnDefinitions>
                 <Label Grid.Column="0" VerticalAlignment="Center" FontSize="10" Padding="0">Playbacksignal vol.</Label>
                 <ProgressBar x:Name="playbackvolumebar" Margin="0" Padding="0" Grid.Column="1" Height="10" HorizontalAlignment="Stretch"></ProgressBar>
+                <TextBlock Grid.Column="1" HorizontalAlignment="Center" FontSize="8" VerticalAlignment="Center" x:Name="masterlvl"></TextBlock>
             </Grid>
             <Grid Grid.Row="5" Margin="0 10 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" VerticalAlignment="Center" FontSize="10" Padding="0">Wav playback irgnoring modifier</Label>
+                <TextBox x:Name="playbackModifier" Grid.Column="1" HorizontalAlignment="Stretch" Margin="10 0 0 0" >0.09</TextBox>
+                <Button Grid.Column="2" Width="20" Margin="5 0 0 0" Click="Button_Click">?</Button>
+            </Grid>
+            <Grid Grid.Row="6" Margin="0 10 0 0">
                 <TextBox IsReadOnly="True" Padding="0" Margin="0" FontSize="10">Get the source at: https://github.com/targor</TextBox>
             </Grid>
+            <Grid Grid.Row="6" Margin="0 10 0 0"/>
         </Grid>
     </Grid>
 </Window>

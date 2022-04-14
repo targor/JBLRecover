@@ -3,6 +3,8 @@ using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Media;
 using System.Text;
@@ -63,7 +65,14 @@ namespace JBLRecover
                     if (device != null && outputDevice != null)
                     {
                         // do not play audio, because there is already audio running that should keep the headphone alive
-                        if (masterpeak >= 0.0001200000)
+                        float f = 0.09f;
+
+                        App.Current.Dispatcher.Invoke(() => 
+                        { 
+                            float.TryParse(playbackModifier.Text,NumberStyles.Float, CultureInfo.InvariantCulture, out f);
+                        });
+
+                        if (masterpeak >= f)
                         {
                             return;
                         }
@@ -213,6 +222,7 @@ namespace JBLRecover
                     if (deviceset)
                     {
                         System.Windows.Forms.MessageBox.Show("A specific jbl device could not be found. The default active device was set instead, please check if everything is allright.");
+                        this.Show();
                     }
                     else
                     {
@@ -234,11 +244,18 @@ namespace JBLRecover
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            if (!File.Exists("Sine_16196_96k_Float_LR.wav"))
+            {
+                System.Windows.Forms.MessageBox.Show("Could not find wav file to play, please reinstall the program.");
+                System.Windows.Forms.Application.Exit();
+            }
+
             txtwavetime.Text = (defaultPlayTime/60).ToString();
 
             System.Windows.Forms.Application.ApplicationExit += (o, e2) =>
             {
                 running = false;
+                App.mutex.ReleaseMutex();
                 Thread.Sleep(3000);
             };
 
@@ -247,6 +264,7 @@ namespace JBLRecover
             this.Visibility = Visibility.Collapsed;
 
             timer = new Thread(() => {
+                
                 int count = 0;
                 while (running)
                 {
@@ -346,6 +364,7 @@ namespace JBLRecover
 
                                 devicevolumebar.Value = volumes[2];
                                 playbackvolumebar.Value = wrapper.Device.AudioMeterInformation.MasterPeakValue;
+                                masterlvl.Text = wrapper.Device.AudioMeterInformation.MasterPeakValue.ToString();
 
                                 trackvolumebar.Value = GetDeviceVolumes(wrapper)[2];
                             });
@@ -393,9 +412,12 @@ namespace JBLRecover
                 val = device.Device.AudioEndpointVolume.MasterVolumeLevelScalar * max;
             }
 
-            
-
             return new double[] { min, max, val, deviceval };
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.MessageBox.Show("If the mastervolume is bigger than this modifier value, then the wav file will not be played. If this value does not fit your requirements, then you can modify it here. Please note, that this value goes only from 0.00 to 1.0 (e.g. 0.02). In other words.");
         }
     }
 }
