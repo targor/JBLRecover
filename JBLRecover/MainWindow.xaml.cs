@@ -40,7 +40,7 @@ namespace JBLRecover
             LoadAudioDevices();
         }
 
-        private void Play(string audioFile = "Sine_16196_96k_Float_LR.wav")
+        private void Play()
         {
             App.Current.Dispatcher.Invoke(() =>
             {
@@ -66,17 +66,19 @@ namespace JBLRecover
                     {
                         // do not play audio, because there is already audio running that should keep the headphone alive
                         float f = 0.09f;
-
+                        string filename = null;
                         App.Current.Dispatcher.Invoke(() => 
                         { 
                             float.TryParse(playbackModifier.Text,NumberStyles.Float, CultureInfo.InvariantCulture, out f);
+                            filename = ((FileInfo)waveFileList.SelectedItem).FullName;
                         });
 
                         if (masterpeak >= f)
                         {
                             return;
                         }
-                        reader = new AudioFileReader(audioFile);
+
+                        reader = new AudioFileReader(filename);
                         outputDevice.Init(reader);
 
                         int deviceIndex = 0;
@@ -245,11 +247,30 @@ namespace JBLRecover
         }
 
 
-
+        public static DirectoryInfo GetCurrentPath()
+        {
+            FileInfo fi = new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location);
+            DirectoryInfo di = fi.Directory;
+            return di;
+        }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!File.Exists("Sine_16196_96k_Float_LR.wav"))
+            foreach(FileInfo f in GetCurrentPath().GetFiles())
+            {
+                if (f.Extension.ToLower().Equals(".wav"))
+                {
+                    waveFileList.Items.Add(f);
+                    if (f.Name.Equals("Sine_16196_96k_Float_LR.wav"))
+                    {
+                        waveFileList.SelectedItem = f;
+                    }
+                }
+            }
+
+
+            // waveFileList
+            if (!File.Exists(((FileInfo)waveFileList.SelectedItem).FullName))
             {
                 System.Windows.Forms.MessageBox.Show("Could not find wav file to play, please reinstall the program.");
                 System.Windows.Forms.Application.Exit();

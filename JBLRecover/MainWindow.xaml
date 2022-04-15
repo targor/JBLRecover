@@ -23,6 +23,7 @@
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" Margin="0 10 0 0">
@@ -89,6 +90,14 @@
                 <CheckBox Grid.Column="1" Margin="5 0 0 0" x:Name="boostplayback"></CheckBox>
             </Grid>
             <Grid Grid.Row="7" Margin="0 10 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" VerticalAlignment="Center" FontSize="10" Padding="0">Choose another wave file</Label>
+                <ComboBox Margin="5 0 0 0" Grid.Column="1" x:Name="waveFileList"></ComboBox>
+            </Grid>
+            <Grid Grid.Row="8" Margin="0 10 0 0">
                 <TextBox IsReadOnly="True" Padding="0" Margin="0" FontSize="10">Get the source at: https://github.com/targor</TextBox>
             </Grid>
             <Grid Grid.Row="9" Margin="0 10 0 0"/>
