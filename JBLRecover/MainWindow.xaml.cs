@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -186,9 +187,12 @@ namespace JBLRecover
                 foreach (object o in devices.Items)
                 {
                     CapsWrapper c = (CapsWrapper)o;
-                    if (c.ToString().ToLower().Contains("jbl")
-                        &&
-                        c.Device.AudioEndpointVolume.MasterVolumeLevel != 0.0f && c.Device.DataFlow==DataFlow.Render)
+                    String x = c.ToString().ToLower();
+                    if (
+                        x.Contains("jbl") &&
+                        c.Device.DataFlow == DataFlow.Render &&
+                        (c.Device.AudioEndpointVolume.MasterVolumeLevel != 0.0f || c.Device.AudioEndpointVolume.MasterVolumeLevelScalar != 0.0f ) 
+                       )
                     {
                         devices.SelectedItem = o;
                         Play();
@@ -256,7 +260,8 @@ namespace JBLRecover
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            foreach(FileInfo f in GetCurrentPath().GetFiles())
+            VersionTxt.Content = "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            foreach (FileInfo f in GetCurrentPath().GetFiles())
             {
                 if (f.Extension.ToLower().Equals(".wav"))
                 {
@@ -335,6 +340,7 @@ namespace JBLRecover
             {
                 int timeinminutes = defaultPlayTime;
                 int.TryParse(txtwavetime.Text, out timeinminutes);
+                if (timeinminutes > 120) { timeinminutes = defaultPlayTime; }
                 this.playtime = 60 * timeinminutes;
             }
         }
